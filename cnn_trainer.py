@@ -4,6 +4,8 @@ import numpy as np
 import json
 import cv2
 
+import dataset_builder as db
+
 import keras
 from keras.preprocessing.image import array_to_img, img_to_array, load_img
 from keras.preprocessing.image import ImageDataGenerator
@@ -22,16 +24,6 @@ from tensorflow.python.tools import optimize_for_inference_lib
 # path of training data and testing data
 trainPath = 'gestures/train'
 testPath = 'gestures/test'
-
-# format of dataset
-file_format = 'png'
-
-# 1 if grayscale, 3 if RGB etc.
-img_channels = 1
-grayscale = True
-
-# dataset images size
-img_rows, img_cols = 32, 32
 
 # number of classes/categories of network output (e.g. car, chicken, human --> 3)
 nb_classes = 3
@@ -57,10 +49,10 @@ def listdir(path):
 
 # loads an opencv image from a filepath
 def get_img(path):
-    image = cv2.imread(path, 0) if grayscale else cv2.imread(path, img_channels)
-    image = cv2.resize(image, (img_rows, img_cols))
+    image = cv2.imread(path, 0) if db.grayscale else cv2.imread(path, db.channel)
+    image = cv2.resize(image, (db.width, db.height))
     image = img_to_array(image)
-    image = image.reshape(img_rows, img_cols, img_channels)
+    image = image.reshape(db.width, db.height, db.channel)
     return image
 
 # get output vector to train network
@@ -100,9 +92,9 @@ def generate_data(path):
 		files = listdir(os.path.join(path, folder))
 		for fl in files:
 			img = get_img(os.path.join(path, folder, fl))
-			img = img.reshape(1, img_rows, img_cols, img_channels)
+			img = img.reshape(1, db.width, db.height, db.channel)
 			i = 0
-			for batch in datagen.flow(img, batch_size=1, save_to_dir=os.path.join(path, folder), save_prefix='genfile', save_format=file_format):
+			for batch in datagen.flow(img, batch_size=1, save_to_dir=os.path.join(path, folder), save_prefix='genfile', save_format=db.file_format):
 				i += 1
 				if i > nb_gen:
 					break
@@ -148,7 +140,7 @@ def load_data(path):
 # build convolutional neural network
 def build_model():
 	model = Sequential()
-	model.add(Conv2D(filters=64, kernel_size=3, strides=1, padding='same', activation='relu', input_shape=[img_rows, img_cols, img_channels]))
+	model.add(Conv2D(filters=64, kernel_size=3, strides=1, padding='same', activation='relu', input_shape=[db.width, db.height, db.channel]))
 	model.add(MaxPooling2D(pool_size=2, strides=2, padding='same'))
 	model.add(Conv2D(filters=128, kernel_size=3, strides=1, padding='same', activation='relu'))
 	model.add(MaxPooling2D(pool_size=2, strides=2, padding='same'))
@@ -179,7 +171,7 @@ def read_model(network_path, network_model, network_weights):
 	model.load_weights(os.path.join(network_path, network_weights))
 	return model
 
-def main():    
+def main():
     # generate data
     generate_data(trainPath)
 

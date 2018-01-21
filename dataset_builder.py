@@ -12,11 +12,8 @@ lower_range = np.array([0, 50, 80])
 upper_range = np.array([30, 200, 255])
 
 # size of image to save
-width, height = 32, 32
-
-# camera
-cap = cv2.VideoCapture(0)
-capture = False
+width, height, channel = 32, 32, 1
+grayscale = True
 
 def main():
     # create path if not exists
@@ -28,6 +25,10 @@ def main():
     print("Press 'r' to start/stop record")
     print("Press 'q' to quit")
     print("##############################")
+
+    # open camera
+    cap = cv2.VideoCapture(0)
+    capture = False
 
     while(True):
         # Capture frame-by-frame
