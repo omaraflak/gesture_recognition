@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 
+# filter image based on hsv color range
 def filter_skin(area, lower_range, upper_range):
     skinkernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(3,3))
     hsv = cv2.cvtColor(area, cv2.COLOR_BGR2HSV)
@@ -11,6 +12,17 @@ def filter_skin(area, lower_range, upper_range):
     result = cv2.bitwise_and(hsv, hsv, mask = mask)
     result = cv2.cvtColor(result, cv2.COLOR_BGR2GRAY)
     return result
+
+# extract hsv color range from face
+# assumption : face main color will be centered
+def hsv_color_range(face):
+    h,w,c = face.shape
+    color = face[int(h/2), int(w/2)]
+    bgr = np.uint8([[color]])
+    hsv = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV)
+    lower_range = np.array(hsv-[10,100,100])
+    upper_range = np.array(hsv+[10,255,255])
+    return lower_range, upper_range
 
 def main():
     # load haar file for face detection
@@ -34,15 +46,8 @@ def main():
             cv2.rectangle(frame,(x,y),(x+w,y+h),(255,0,0),2)
             roi = frame[y:y+h, x:x+w]
 
-            # get hsv color of the face
-            h,w,c = roi.shape
-            color = roi[int(h/2), int(w/2)]
-            bgr = np.uint8([[color]])
-            hsv = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV)
-
-            # define skin color range based on face color
-            lower_range = np.array(hsv-[10,100,100])
-            upper_range = np.array(hsv+[10,255,255])
+            # get skin color range based on face color
+            lower_range, upper_range = hsv_color_range(roi)
 
             # filter region of interest with skin color range
             result = filter_skin(area, lower_range, upper_range)
