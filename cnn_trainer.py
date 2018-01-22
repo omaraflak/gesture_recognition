@@ -162,7 +162,7 @@ def train(model, x_train, y_train, x_test, y_test):
 def save_model(model, network_path, network_model, network_weights):
     if not os.path.isdir(network_path):
         os.mkdir(network_path)
-    open(os.path.join(path, network_model), 'w').write(model.to_json())
+    open(os.path.join(network_path, network_model), 'w').write(model.to_json())
     model.save_weights(os.path.join(network_path, network_weights), overwrite=True)
 
 # load network model and network weights from files
