@@ -3,8 +3,18 @@ import dataset_builder as db
 import skin_reco
 import numpy as np
 import cv2
+import os
 
 from keras.preprocessing.image import array_to_img, img_to_array
+
+def max_index_of(array):
+    m = -1
+    index = -1
+    for i in range(len(array)):
+        if array[i] > m:
+            m = array[i]
+            index = i
+    return index
 
 def main():
     # load neural network
@@ -19,8 +29,8 @@ def main():
     while(True):
         # get image from camera
         ret, frame = cap.read()
-        cv2.rectangle(frame, (0,0), (300,300), (0,0,255), 1)
-        area = frame[0:300, 0:300]
+        cv2.rectangle(frame, (100,100), (300,300), (0,0,255), 1)
+        area = frame[100:300, 100:300]
 
         # extract hand using skin color
         lower_range, upper_range = skin_reco.hsv_color_range_from_image(frame, face_cascade)
@@ -35,9 +45,10 @@ def main():
 
             # use the model to predict the output
             output = model.predict(image)
-            print(output)
+            os.system('clear')
+            print(max_index_of(output[0]))
 
-            cv2.imshow('hand', result)
+            cv2.imshow('result', result)
 
         # display
         cv2.imshow('frame', frame)
