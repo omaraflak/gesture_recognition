@@ -16,18 +16,18 @@ Here I describe the main steps that led to the final version of this program.
 
 At first, I thought that OpenCV could have been enough to solve the problem. By applying several image processing techniques — such as Gaussian mixture-based background subtraction algorithm and convolution — a pretty good job was done !
 
-**[Watch the video](https://github.com/OmarAflak/tribe/blob/master/readme/video1.mp4?raw=true)**
+**[Watch the video](https://github.com/OmarAflak/tribe/blob/master/res/video1.mp4?raw=true)**
 
 
 The idea here was to capture a still background then "subtract" it from the other frames which would eventually seperate the user from the rest.
 Then converting the image into gray scale and thresholding at a certain value would result in a black and white image.
 
-<img src="https://github.com/OmarAflak/tribe/blob/master/readme/image1.jpg?raw=true" />
+<img src="https://github.com/OmarAflak/tribe/blob/master/res/image1.jpg?raw=true" />
 
 
 Then I would find the biggest white contour using a convex hull finder and assume that it is the user's hand. Finally I would count the number of edges found in the previous step and deduce the number of fingers on the screen and thus the shape of the hand.
 
-<img src="https://github.com/OmarAflak/tribe/blob/master/readme/image2.jpg?raw=true" />
+<img src="https://github.com/OmarAflak/tribe/blob/master/res/image2.jpg?raw=true" />
 
 Unfortunately, this could not work in a real life situation because of the background which wouldn't have been static.
 
@@ -50,7 +50,7 @@ This works while the assumption that our **face color** and **hand color** are *
 
 Once the user's hand extracted from the background I can apply gray scaling, label the image and it's ready for the neural network.
 
-<img src="https://github.com/OmarAflak/tribe/blob/master/readme/image3.png?raw=true" />
+<img src="https://github.com/OmarAflak/tribe/blob/master/res/image3.png?raw=true" />
 
 ### Network Architecture
 
