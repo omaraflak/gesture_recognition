@@ -26,7 +26,7 @@ trainPath = 'gestures/train'
 testPath = 'gestures/test'
 
 # number of classes/categories of network output (e.g. car, chicken, human --> 3)
-nb_classes = 4
+nb_classes = 5
 
 # how many images to process before applying gradient correction
 batch_sz = 32
