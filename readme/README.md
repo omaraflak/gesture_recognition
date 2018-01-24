@@ -16,7 +16,8 @@ Here I describe the main steps that led to this program.
 
 At first I thought that OpenCV could have been enough to solve the problem. By applying several image processing techniques such as Gaussian mixture-based background subtraction algorithm and convolutions, a pretty good job was done !
 
-**See [Video](https://github.com/OmarAflak/tribe/blob/master/readme/video1.mp4)**
+**[Watch the video](https://github.com/OmarAflak/tribe/blob/master/readme/video1.mp4)**
+
 
 The idea here was to capture a still background then "subtract" it from the other frames which would eventually seperate the user from the rest.
 Then converting the image into a gray scale and thresholding at a certain value would result in a black and white image (see on the right of the screen in the video).
@@ -43,7 +44,7 @@ This works while the assumption that our face color and hand color are almost th
 
 Once the user's hand is extracted from the background I can apply gray scaling, label the image and it's ready for the neural network.
 
-[image](https://github.com/OmarAflak/tribe/blob/master/readme/image1.png)
+<img src="https://github.com/OmarAflak/tribe/blob/master/readme/image1.png?raw=true" />
 
 ### Neural Network Architecture
 
@@ -102,3 +103,10 @@ python cnn_trainer.py
 Once the network has trained, it should have generated two folders **cache** and **out**.
 * **cache** contains the whole network (model + weights) saved into files, so you can reload it later without retrain it
 * **out** contains several files. Amongst them, a file starting with **tensorflow_lite_** which is the network model for Tensorflow Lite. Tensorflow Lite was developed by Google and allows you to run pretrained tensorflow models om mobile devices (Android and IOS).  
+
+
+To execute the script, simply run :
+
+```shell
+python cnn_tester.py
+```
