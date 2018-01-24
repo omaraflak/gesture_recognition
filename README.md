@@ -76,9 +76,9 @@ Four files are included in this repository :
 
 ## Step 1 : Build a dataset
 
-In **dataset_builder.py** there is a **data_path** variable which is set by default to **gestures/train/class1**.
+In **dataset_builder.py** there is a **dataset_folder** variable which is set by default to **gestures**.
 
-This folder will contain a first class of gestures. You need to build a **training** dataset and a **testing** dataset. Moreover, the dataset folder should include a different folder for each class e.g.
+This folder will contain **training** data and **testing** data. Moreover, the **train** folder and the **test** folder should include different folders for each class e.g.
 
 ```
 --- dataset/
@@ -98,7 +98,7 @@ This folder will contain a first class of gestures. You need to build a **traini
         --- chickens/
 ```
 
-Change the path according to your needs (e.g. **dataset/train/cars**) and start the script by running :
+The script was made so that the **train** folder, the **test** folder as well as the **dataset** folder are generated automatically. Simple set the variables according to your needs and run the program :
 
 ```shell
 python dataset_builder.py
@@ -112,11 +112,9 @@ Repeat the whole process for every category (class) you want to classify with th
 
 As training a neural network is computationally intensive and can take a lot of time, I would **highly recommend** to use a **GPU** if you have one : [A VERY USEFUL LINK](https://github.com/williamFalcon/tensorflow-gpu-install-ubuntu-16.04)
 
-Open **cnn_trainer.py** and set the right values for **trainPath** and **testPath** which are respectively the path to the training dataset, and the path to the testing dataset.
+Open **cnn_trainer.py** and set **nb_classes** according to the number of gestures you recorded earlier.
 
-You will also have to change **nb_classes** according to the number of gestures you recorded earlier.
-
-To execute the script, simply run :
+Then run the program :
 
 ```shell
 python cnn_trainer.py

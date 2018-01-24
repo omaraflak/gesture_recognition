@@ -6,8 +6,12 @@ import os
 
 # path to save captures
 dataset_folder = 'gestures'
-class_name = 'class1'
+class_name = 'class3'
 file_format = 'png'
+
+# training and testing folder
+train_folder = 'train'
+test_folder = 'test'
 
 # size of image to save
 width, height, channel = 32, 32, 1
@@ -22,8 +26,8 @@ def timestamped_filename(file_format):
     return str(int(round(time.time() * 1000)))+"."+file_format
 
 def main():
-    trainPath = os.path.join(dataset_folder, 'train', class_name)
-    trainPath = os.path.join(dataset_folder, 'test', class_name)
+    trainPath = os.path.join(dataset_folder, train_folder, class_name)
+    testPath = os.path.join(dataset_folder, test_folder, class_name)
 
     # create paths if not exists
     check_path(trainPath)
@@ -75,7 +79,7 @@ def main():
                 filename = timestamped_filename(file_format)
                 pic = cv2.resize(result, (width, height))
                 cv2.imwrite(os.path.join(testPath, filename), pic)
-            elif:
+            else:
                 print("stop capture")
 
     # When everything done, release the capture

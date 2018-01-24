@@ -21,10 +21,6 @@ import tensorflow as tf
 from tensorflow.python.tools import freeze_graph
 from tensorflow.python.tools import optimize_for_inference_lib
 
-# path of training data and testing data
-trainPath = 'gestures/train'
-testPath = 'gestures/test'
-
 # number of classes/categories of network output (e.g. car, chicken, human --> 3)
 nb_classes = 5
 
@@ -196,6 +192,10 @@ def export_model_for_mobile(saver, model, model_name, input_node_names, output_n
 
 
 def main():
+    # get training and testing folders from dataset_builder.py
+    trainPath = os.path.join(db.dataset_folder, db.train_folder)
+    testPath = os.path.join(db.dataset_folder, db.test_folder)
+
     # generate data
     generate_data(trainPath)
 
