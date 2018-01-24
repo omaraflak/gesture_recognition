@@ -1,4 +1,4 @@
-# Tribe Gesture Recognition Program
+# Gesture Recognition Program
 
 This program aim to recognize hand gestures based on a small dataset of images.
 
