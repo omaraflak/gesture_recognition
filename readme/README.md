@@ -16,7 +16,7 @@ Here I describe the main steps that led to this program.
 
 At first I thought that OpenCV could have been enough to solve the problem. By applying several image processing techniques such as Gaussian mixture-based background subtraction algorithm and convolutions, a pretty good job was done !
 
-**[Watch the video](https://github.com/OmarAflak/tribe/blob/master/readme/video1.mp4)**
+**[Watch the video](https://github.com/OmarAflak/tribe/blob/master/readme/video1.mp4?raw=true)**
 
 
 The idea here was to capture a still background then "subtract" it from the other frames which would eventually seperate the user from the rest.
