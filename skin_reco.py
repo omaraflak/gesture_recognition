@@ -3,11 +3,8 @@ import cv2
 
 # filter image based on hsv color range
 def filter_skin(area, lower_range, upper_range):
-    skinkernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(3,3))
     hsv = cv2.cvtColor(area, cv2.COLOR_BGR2HSV)
     mask = cv2.inRange(hsv, lower_range, upper_range)
-    mask = cv2.erode(mask, skinkernel, iterations = 1)
-    mask = cv2.dilate(mask, skinkernel, iterations = 1)
     mask = cv2.GaussianBlur(mask, (15,15), 1)
     result = cv2.bitwise_and(hsv, hsv, mask = mask)
     result = cv2.cvtColor(result, cv2.COLOR_BGR2GRAY)
@@ -20,8 +17,8 @@ def hsv_color_range_from_face(face):
     color = face[int(h/2), int(w/2)]
     bgr = np.uint8([[color]])
     hsv = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV)
-    lower_range = np.array(hsv-[10,100,100])
-    upper_range = np.array(hsv+[10,255,255])
+    lower_range = np.array([hsv[0]-10,100,100])
+    upper_range = np.array([hsv[0]+10,255,255])
     return lower_range, upper_range
 
 # use haar file
