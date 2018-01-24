@@ -17,8 +17,8 @@ def hsv_color_range_from_face(face):
     color = face[int(h/2), int(w/2)]
     bgr = np.uint8([[color]])
     hsv = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV)
-    lower_range = np.array([hsv[0]-10,100,100])
-    upper_range = np.array([hsv[0]+10,255,255])
+    lower_range = np.array(hsv-[10,100,100])
+    upper_range = np.array(hsv+[10,255,255])
     return lower_range, upper_range
 
 # use haar file
