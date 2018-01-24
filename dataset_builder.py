@@ -5,18 +5,29 @@ import cv2
 import os
 
 # path to save captures
-data_path = 'gestures/train/class1'
+dataset_folder = 'gestures'
+class_name = 'class1'
 file_format = 'png'
 
 # size of image to save
 width, height, channel = 32, 32, 1
 grayscale = True
 
+def check_path(path):
+    if not os.path.exists(path):
+        os.makedirs(path)
+        print(path, " has been created.")
+
+def timestamped_filename(file_format):
+    return str(int(round(time.time() * 1000)))+"."+file_format
+
 def main():
-    # create path if not exists
-    if not os.path.exists(data_path):
-        os.makedirs(data_path)
-        print(data_path, " has been created.")
+    trainPath = os.path.join(dataset_folder, 'train', class_name)
+    trainPath = os.path.join(dataset_folder, 'test', class_name)
+
+    # create paths if not exists
+    check_path(trainPath)
+    check_path(testPath)
 
     # load face reco haar
     face_cascade = cv2.CascadeClassifier('haar/haarcascade_frontalface_default.xml')
@@ -42,16 +53,16 @@ def main():
         lower_range, upper_range = skin_reco.hsv_color_range_from_image(img, face_cascade)
         if lower_range is not None and upper_range is not None:
             result = skin_reco.filter_skin(area, lower_range, upper_range)
-            cv2.imshow('hand', result)
+            cv2.imshow('result', result)
 
         # display results
         cv2.imshow('camera', img)
 
         # start/stop capture
         if capture:
-            filename = str(int(round(time.time() * 1000)))+"."+file_format
+            filename = timestamped_filename(file_format)
             pic = cv2.resize(result, (width, height))
-            cv2.imwrite(os.path.join(data_path, filename), pic)
+            cv2.imwrite(os.path.join(trainPath, filename), pic)
 
         # handle keyboard events
         key = cv2.waitKey(1)
@@ -59,7 +70,13 @@ def main():
             break
         elif key == ord('r'):
             capture = not capture
-            print("start capture" if capture else "stop capture")
+            if capture:
+                print("start capture")
+                filename = timestamped_filename(file_format)
+                pic = cv2.resize(result, (width, height))
+                cv2.imwrite(os.path.join(testPath, filename), pic)
+            elif:
+                print("stop capture")
 
     # When everything done, release the capture
     cap.release()
