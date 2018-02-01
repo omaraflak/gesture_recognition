@@ -27,7 +27,7 @@ nb_classes = 5
 batch_sz = 32
 
 # how many times the network should train on the whole dataset
-nb_epoch = 40
+nb_epoch = 30
 
 # how many images to generate per image in datasets
 nb_gen = 20
