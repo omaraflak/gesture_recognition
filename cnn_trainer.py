@@ -27,7 +27,7 @@ nb_classes = 5
 batch_sz = 32
 
 # how many times the network should train on the whole dataset
-nb_epoch = 40
+nb_epoch = 30
 
 # how many images to generate per image in datasets
 nb_gen = 20
@@ -50,7 +50,7 @@ def get_img(path):
     image = image.reshape(db.width, db.height, db.channel)
     return image
 
-# get output vector to train network
+# get output vector for network
 def get_output(i):
 	out = []
 	for j in range(nb_classes):
@@ -94,7 +94,7 @@ def generate_data(path):
 				if i > nb_gen:
 					break
 
-# load data from dataset folder
+# load data from dataset folder
 # the dataset folder should include a different folder for each class e.g.
 # --- dataset/
 #       --- cars/
@@ -120,7 +120,7 @@ def load_data(path):
 
 	for i in range(nb_classes):
 		files = listdir(os.path.join(path, classesFolders[i]))
-		mapping.append(classesFolders[i]+' : '+str(i))
+		mapping.append(classesFolders[i])
 		for fl in files:
 			X_data.append(get_img(os.path.join(path, classesFolders[i], fl)))
 			Y_data.append(get_output(i))
@@ -208,7 +208,7 @@ def main():
     save_model(model, 'cache', 'architecture.json', 'weights.h5')
 
     # Export model for tensorflow lite + write labels
-    export_model_for_mobile('out', 'tribe_convnet', "conv2d_1_input", "dense_2/Softmax")
+    export_model_for_mobile('out', 'convnet', "conv2d_1_input", "dense_2/Softmax")
     labels = open('out/labels.txt', 'w')
     for item in mapping:
         labels.write("%s\n" % item)
