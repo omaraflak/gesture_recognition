@@ -6,7 +6,7 @@ import os
 
 # path to save captures
 dataset_folder = 'gestures'
-class_name = 'class3'
+class_name = 'class1'
 file_format = 'png'
 
 # training and testing folder
@@ -17,13 +17,16 @@ test_folder = 'test'
 width, height, channel = 32, 32, 1
 grayscale = True
 
+def timestamp():
+    return int(round(time.time() * 1000))
+
 def check_path(path):
     if not os.path.exists(path):
         os.makedirs(path)
         print(path, " has been created.")
 
 def timestamped_filename(file_format):
-    return str(int(round(time.time() * 1000)))+"."+file_format
+    return str(timestamp())+"."+file_format
 
 def main():
     trainPath = os.path.join(dataset_folder, train_folder, class_name)
@@ -45,6 +48,10 @@ def main():
     cap = cv2.VideoCapture(0)
     capture = False
 
+    # capture settings
+    time_between_capture_ms = 100
+    last_capture = timestamp()
+
     while(True):
         # Capture frame-by-frame
         ret, img = cap.read()
@@ -63,10 +70,11 @@ def main():
         cv2.imshow('camera', img)
 
         # start/stop capture
-        if capture:
+        if capture and timestamp()-last_capture>time_between_capture_ms:
             filename = timestamped_filename(file_format)
             pic = cv2.resize(result, (width, height))
             cv2.imwrite(os.path.join(trainPath, filename), pic)
+            last_capture = timestamp()
 
         # handle keyboard events
         key = cv2.waitKey(1)
