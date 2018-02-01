@@ -18,11 +18,10 @@ from keras.utils import np_utils
 from keras import backend as K
 
 import tensorflow as tf
-from tensorflow.python.tools import freeze_graph
-from tensorflow.python.tools import optimize_for_inference_lib
+from tensorflow.python.tools import freeze_graph, optimize_for_inference_lib
 
 # number of classes/categories of network output (e.g. car, chicken, human --> 3)
-nb_classes = 5
+nb_classes = 3
 
 # how many images to process before applying gradient correction
 batch_sz = 32
@@ -168,26 +167,26 @@ def read_model(network_path, network_model, network_weights):
 	return model
 
 # export model for mobile devices (tensorflow lite)
-def export_model_for_mobile(saver, model, model_name, input_node_names, output_node_name):
-    tf.train.write_graph(K.get_session().graph_def, 'out', \
+def export_model_for_mobile(dst, model_name, input_node_name, output_node_name):
+    tf.train.write_graph(K.get_session().graph_def, dst, \
         model_name + '_graph.pbtxt')
 
-    saver.save(K.get_session(), 'out/' + model_name + '.chkp')
+    tf.train.Saver().save(K.get_session(), dts + '/' + model_name + '.chkp')
 
-    freeze_graph.freeze_graph('out/' + model_name + '_graph.pbtxt', None, \
-        False, 'out/' + model_name + '.chkp', output_node_name, \
+    freeze_graph.freeze_graph(dst + '/' + model_name + '_graph.pbtxt', None, \
+        False, dst + '/' + model_name + '.chkp', output_node_name, \
         "save/restore_all", "save/Const:0", \
-        'out/frozen_' + model_name + '.pb', True, "")
+        dst + '/frozen_' + model_name + '.pb', True, "")
 
     input_graph_def = tf.GraphDef()
-    with tf.gfile.Open('out/frozen_' + model_name + '.pb', "rb") as f:
+    with tf.gfile.Open(dst + '/frozen_' + model_name + '.pb', "rb") as f:
         input_graph_def.ParseFromString(f.read())
 
     output_graph_def = optimize_for_inference_lib.optimize_for_inference(
-            input_graph_def, input_node_names, [output_node_name],
+            input_graph_def, [input_node_name], [output_node_name],
             tf.float32.as_datatype_enum)
 
-    with tf.gfile.FastGFile('out/tensorflow_lite_' + model_name + '.pb', "wb") as f:
+    with tf.gfile.FastGFile(dst + '/tensorflow_lite_' + model_name + '.pb', "wb") as f:
         f.write(output_graph_def.SerializeToString())
 
 
@@ -208,8 +207,11 @@ def main():
     train(model, x_train, y_train, x_test, y_test)
     save_model(model, 'cache', 'architecture.json', 'weights.h5')
 
-    # Export model for tensorflow lite
-    export_model_for_mobile(tf.train.Saver(), model, 'tribe_convnet', ["conv2d_1_input"], "dense_2/Softmax")
+    # Export model for tensorflow lite + write labels
+    export_model_for_mobile('out', 'tribe_convnet', "conv2d_1_input", "dense_2/Softmax")
+    labels = open('out/labels.txt', 'w')
+    for item in mapping:
+        labels.write("%s\n" % item)
 
     # Evaluate model on test data
     scores = model.evaluate(x_test, y_test, verbose=0)

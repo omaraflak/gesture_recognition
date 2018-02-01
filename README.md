@@ -10,8 +10,6 @@ This code uses the following frameworks and libraries :
 
 # Thinking Process
 
-Here I describe the main steps that led to the final version of this program.
-
 ## OpenCV
 
 At first, I thought that OpenCV could have been enough to solve the problem. By applying several image processing techniques — such as Gaussian mixture-based background subtraction algorithm and convolution — a pretty good job was done !
@@ -25,7 +23,7 @@ Then converting the image into gray scale and thresholding at a certain value wo
 <img src="https://github.com/OmarAflak/tribe/blob/master/res/image1.jpg?raw=true" />
 
 
-Then I would find the biggest white contour using a convex hull finder and assume that it is the user's hand. Finally I would count the number of edges found in the previous step and deduce the number of fingers on the screen and thus the shape of the hand.
+Then I would find the biggest contour using a convex hull finder and assume that it is the user's hand. Finally I would count the number of edges found in the previous step and deduce the number of fingers on the screen and thus the shape of the hand.
 
 <img src="https://github.com/OmarAflak/tribe/blob/master/res/image2.jpg?raw=true" />
 
@@ -35,7 +33,7 @@ Unfortunately, this could not work in a real life situation because of the backg
 
 The next try was all about machine learning. I took several videos of my hand in different positions and I injected this dataset into a neural network which had to classify the each picture into a gesture category (e.g. rock, paper, scissors).
 
-This didn't work either. As the images contained a complex background (e.g me, people moving, the sky, the lights, etc.) and because I had too few images, the neural network couldn't generalize well.
+This didn't work either. As the images contained a complex background (e.g people moving, the sky, the lights, etc.) and because I had too few images, the network couldn't generalize well.
 
 ## OpenCV + Machine Learning
 
@@ -45,17 +43,24 @@ If I could extract the shape of the hand from an image without its background, t
 
 First problem : **how to extract the hand from the background ?**
 
-A good solution was to filter the image based on a **HSV skin color** range. It worked for me with empirical values but for someone with a lighter/darker skin it could have failed. Fortunately, OpenCV has a built-in face recognition tool. This allowed me to track the user's face, detect its color, and filter the image based on this color.
-This works while the assumption that our **face color** and **hand color** are **almost the same**.
+A good solution was to filter the image based on a **HSV skin color** range. It worked for me with empirical values but for someone with a lighter/darker skin it could have failed. Fortunately, OpenCV has a built-in face recognition tool. This allowed me to track the user's face, pick its color, and filter the image based on this color.
+This technique works while the assumption that our **face** and our **hands** have **almost the same color** is true.
 
-Once the user's hand extracted from the background I can apply gray scaling, label the image and it's ready for the neural network.
+The **HSV range** used for filtering is defined as follow :
+```
+hsv_face = detect_face_hsv()
+hsv_lower_range = hsv_face - [10, 100, 100]
+hsv_upper_range = hsv_face + [10, 255, 255]
+```
+
+Once the user's hand extracted from the background, a **gray scaling** is applied, the image is labeled and it's ready for the neural network.
 
 <img src="https://github.com/OmarAflak/tribe/blob/master/res/image3.png?raw=true" />
 
 ### Network Architecture
 
-I used **Keras** which is a high level library built on top of **Tensorflow** and which allows you to create complex neural networks easily.
-For image recognition, **convolutional neural networks** have proven to be very efficient. Therefore, the neural network I used for this program has the following architecture :
+I used **Keras** which is a high level framework built on top of **Tensorflow** and which allows you to create complex neural networks easily.
+For image recognition problems, **convolutional neural networks** have proven to be very efficient (no implementation of CapsNet for now...). Therefore, the neural network I used for this program has the following architecture :
 
 **Input > Conv > Max Pooling > Conv > Max Pooling > Conv > Max Pooling > Dense > Fully Connected > Output**
 
@@ -63,7 +68,7 @@ Each convolutional layers uses a Rectified Linear Unit (ReLU) activation functio
 
 ## Image Augmentation with Keras
 
-The datasets we generated using videos of our hands may not be enough. Fortunately, Keras implements a powerful tool called **image augmentation**. This api can generate many images by applying transformations such as rotations, translations, zooming, shifting etc. to an existing image.
+The dataset generated using videos of my hands may not be enough. Fortunately, Keras implements a powerful tool called **image augmentation**. This api can generate many images by applying transformations such as rotations, translations, zooming, shifting etc. to an existing image.
 
 # How to use
 
@@ -134,8 +139,10 @@ To execute the script, simply run :
 python cnn_tester.py
 ```
 
-# Author
+# Mobile integration
 
-Omar Aflak
+Some points to emphasize if the model is used on mobile phones :
 
-@Tribe, January 2018
+* The network **cannot** process images of a **different** size that those it was trained on (currently **32x32** pixels but can be easily changed).
+* The image passed to the network should be filtered based on **hsv** skin color and in **gray scale** mode.
+* The output of the prediction is a vector of size (1*n) where n is the number of classes the network was trained on. The output vector shall have values in the range [0,1]. e.g. The following output [0.1, 0.2, 0.0, 0.85] means the network predicted that 4th class to be the one in the image. The mapping between the output vector and the classes is available in the file **labels.txt***.
