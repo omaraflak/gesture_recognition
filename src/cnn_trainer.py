@@ -205,11 +205,11 @@ def main():
     # Create network, train it, save it
     model = build_model()
     train(model, x_train, y_train, x_test, y_test)
-    save_model(model, 'cache', 'architecture.json', 'weights.h5')
+    save_model(model, '../cache', 'architecture.json', 'weights.h5')
 
     # Export model for tensorflow lite + write labels
-    export_model_for_mobile('out', 'convnet', "conv2d_1_input", "dense_2/Softmax")
-    labels = open('out/labels.txt', 'w')
+    export_model_for_mobile('../out', 'convnet', "conv2d_1_input", "dense_2/Softmax")
+    labels = open('../out/labels.txt', 'w')
     for item in mapping:
         labels.write("%s\n" % item)
 

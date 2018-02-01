@@ -5,7 +5,7 @@ import cv2
 import os
 
 # path to save captures
-dataset_folder = 'gestures'
+dataset_folder = '../gestures'
 class_name = 'class1'
 file_format = 'png'
 
@@ -37,7 +37,7 @@ def main():
     check_path(testPath)
 
     # load face reco haar
-    face_cascade = cv2.CascadeClassifier('haar/haarcascade_frontalface_default.xml')
+    face_cascade = cv2.CascadeClassifier('../haar/haarcascade_frontalface_default.xml')
 
     print("##############################")
     print("Press 'r' to start/stop record")

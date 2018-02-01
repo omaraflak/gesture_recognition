@@ -33,7 +33,7 @@ def hsv_color_range_from_image(frame, face_cascade):
 
 def main():
     # load haar file for face detection
-    face_cascade = cv2.CascadeClassifier('haar/haarcascade_frontalface_default.xml')
+    face_cascade = cv2.CascadeClassifier('../haar/haarcascade_frontalface_default.xml')
 
     # start camera
     cap = cv2.VideoCapture(0)
