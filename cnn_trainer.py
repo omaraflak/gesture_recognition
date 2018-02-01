@@ -21,7 +21,7 @@ import tensorflow as tf
 from tensorflow.python.tools import freeze_graph, optimize_for_inference_lib
 
 # number of classes/categories of network output (e.g. car, chicken, human --> 3)
-nb_classes = 3
+nb_classes = 5
 
 # how many images to process before applying gradient correction
 batch_sz = 32
@@ -171,7 +171,7 @@ def export_model_for_mobile(dst, model_name, input_node_name, output_node_name):
     tf.train.write_graph(K.get_session().graph_def, dst, \
         model_name + '_graph.pbtxt')
 
-    tf.train.Saver().save(K.get_session(), dts + '/' + model_name + '.chkp')
+    tf.train.Saver().save(K.get_session(), dst + '/' + model_name + '.chkp')
 
     freeze_graph.freeze_graph(dst + '/' + model_name + '_graph.pbtxt', None, \
         False, dst + '/' + model_name + '.chkp', output_node_name, \
