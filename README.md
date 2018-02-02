@@ -14,18 +14,18 @@ This code uses the following frameworks and libraries :
 
 At first, I thought that OpenCV could have been enough to solve the problem. By applying several image processing techniques — such as Gaussian mixture-based background subtraction algorithm and convolution — a pretty good job was done !
 
-**[Watch the video](https://github.com/OmarAflak/gestures_recognition/blob/master/res/video1.mp4?raw=true)**
+**[Watch the video](https://github.com/OmarAflak/gesture_recognition/blob/master/res/video1.mp4?raw=true)**
 
 
 The idea here was to capture a still background then "subtract" it from the other frames which would eventually seperate the user from the rest.
 Then converting the image into gray scale and thresholding at a certain value would result in a black and white image.
 
-<img src="https://github.com/OmarAflak/gestures_recognition/blob/master/res/image1.jpg?raw=true" />
+<img src="https://github.com/OmarAflak/gesture_recognition/blob/master/res/image1.jpg?raw=true" />
 
 
 Then I would find the biggest contour using a convex hull finder and assume that it is the user's hand. Finally I would count the number of edges found in the previous step and deduce the number of fingers on the screen and thus the shape of the hand.
 
-<img src="https://github.com/OmarAflak/gestures_recognition/blob/master/res/image2.jpg?raw=true" />
+<img src="https://github.com/OmarAflak/gesture_recognition/blob/master/res/image2.jpg?raw=true" />
 
 Unfortunately, this could not work in a real life situation because of the background which wouldn't have been static.
 
@@ -55,7 +55,7 @@ hsv_upper_range = hsv_face + [10, 255, 255]
 
 Once the user's hand extracted from the background, a **gray scaling** is applied, the image is labeled and it's ready for the neural network.
 
-<img src="https://github.com/OmarAflak/gestures_recognition/blob/master/res/image3.png?raw=true" />
+<img src="https://github.com/OmarAflak/gesture_recognition/blob/master/res/image3.png?raw=true" />
 
 ### Network Architecture
 
@@ -147,4 +147,4 @@ Some points to emphasize if the model is used on mobile phones :
 * The image passed to the network should be filtered based on **hsv** skin color and in **gray scale** mode.
 * The output of the prediction is a vector of size (1,n) where n is the number of classes the network was trained on. The network will output numbers between 0 and 1 (a number close to 0 means low probability, a number close to 1 means high probability). The mapping between the output vector and the classes is available in the file **out/labels.txt** after the training.
 
-I also included a pre-trained model: [pretrained_model.zip](https://github.com/OmarAflak/gestures_recognition/raw/master/pretrained_model.zip)
+I also included a pre-trained model: [pretrained_model.zip](https://github.com/OmarAflak/gesture_recognition/raw/master/pretrained_model.zip)
