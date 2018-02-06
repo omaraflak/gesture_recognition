@@ -86,23 +86,23 @@ def generate_data(path):
 #           - chicken1.png
 #           - chicken2.png
 def load_data(dataset_path):
-	x_data = []
-	y_data = []
-	labels = []
+    x_data = []
+    y_data = []
+    labels = []
 
     classes = os.listdir(dataset_path)
-	for i in range(len(classes)):
-		files = os.listdir(os.path.join(dataset_path, classes[i]))
-		labels.append(classes[i])
-		for fl in files:
-			x_data.append(get_img(os.path.join(dataset_path, classes[i], fl)))
-			y_data.append(i)
+    for i in range(len(classes)):
+        files = os.listdir(os.path.join(dataset_path, classes[i]))
+        labels.append(classes[i])
+        for fl in files:
+            x_data.append(get_img(os.path.join(dataset_path, classes[i], fl)))
+            y_data.append(i)
 
-	x_data = np.array(x_data, dtype="float") / 255.0
-	y_data = np.array(y_data)
+    x_data = np.array(x_data, dtype="float") / 255.0
+    y_data = np.array(y_data)
 
     y_data = keras.utils.np_utils.to_categorical(y_data)
-	return x_data, y_data, labels
+    return x_data, y_data, labels
 
 # split dataset into training and testing
 def split_dataset(x_data, y_data):
@@ -139,9 +139,9 @@ def save_model(model, network_path):
 # load network model and network weights from files
 def read_model(network_path):
     exit_ifnex(network_path)
-	model = model_from_json(open(os.path.join(network_path, 'architecture.json')).read())
-	model.load_weights(os.path.join(network_path, 'weights.h5'))
-	return model
+    model = model_from_json(open(os.path.join(network_path, 'architecture.json')).read())
+    model.load_weights(os.path.join(network_path, 'weights.h5'))
+    return model
 
 # export model for mobile devices (tensorflow lite)
 def export_model_for_mobile(dst, model_name, input_node_name, output_node_name):
@@ -184,7 +184,7 @@ def main():
     # Export model for tensorflow lite + write labels
     export_model_for_mobile('../out', 'convnet', "conv2d_1_input", "dense_2/Softmax")
     labels = open('../out/labels.txt', 'w')
-    for item in mapping:
+    for item in labels:
         labels.write("%s\n" % item)
 
     # Evaluate model on test data
