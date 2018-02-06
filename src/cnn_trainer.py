@@ -169,7 +169,7 @@ def export_model_for_mobile(dst, model_name, input_node_name, output_node_name):
 
 def main():
     # generate data
-    generate_data(db.dataset_folder)
+    # generate_data(db.dataset_folder)
 
     # Load data, split data
     x_data, y_data, labels = load_data(db.dataset_folder)
@@ -183,9 +183,9 @@ def main():
 
     # Export model for tensorflow lite + write labels
     export_model_for_mobile('../out', 'convnet', "conv2d_1_input", "dense_2/Softmax")
-    labels = open('../out/labels.txt', 'w')
+    fl = open('../out/labels.txt', 'w')
     for item in labels:
-        labels.write("%s\n" % item)
+        fl.write("%s\n" % item)
 
     # Evaluate model on test data
     scores = model.evaluate(x_test, y_test)
