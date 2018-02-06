@@ -9,10 +9,9 @@ import dataset_builder as db
 import keras
 from keras.preprocessing.image import array_to_img, img_to_array, load_img
 from keras.preprocessing.image import ImageDataGenerator
-from keras.datasets import mnist
 from keras.models import Sequential
 from keras.models import model_from_json
-from keras.layers import Input, Dense, Dropout, Flatten
+from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
 from keras.utils import np_utils
 from keras import backend as K
@@ -169,7 +168,7 @@ def export_model_for_mobile(dst, model_name, input_node_name, output_node_name):
 
 def main():
     # generate data
-    # generate_data(db.dataset_folder)
+    generate_data(db.dataset_folder)
 
     # Load data, split data
     x_data, y_data, labels = load_data(db.dataset_folder)

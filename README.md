@@ -142,4 +142,6 @@ Some points to emphasize if the model is used on mobile phones :
 * The image passed to the network should be filtered based on **hsv** skin color and in **gray scale** mode.
 * The output of the prediction is a vector of size (1,n) where n is the number of classes the network was trained on. The network will output numbers between 0 and 1 (a number close to 0 means low probability, a number close to 1 means high probability). The mapping between the output vector and the classes is available in the file **out/labels.txt** after the training.
 
-I also included a pre-trained model: [pretrained_model.zip](https://github.com/OmarAflak/gesture_recognition/raw/master/pretrained_model.zip)
+# Pre-trained model
+
+I also included a pre-trained model that you can find here : [Google Drive](https://drive.google.com/drive/folders/1m-eXc9gCy95Fl5Koc3R2fyCULjBoXvlh?usp=sharing)
