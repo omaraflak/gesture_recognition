@@ -9,10 +9,6 @@ dataset_folder = '../gestures'
 class_name = 'class1'
 file_format = 'png'
 
-# training and testing folder
-train_folder = 'train'
-test_folder = 'test'
-
 # size of image to save
 width, height, channel = 32, 32, 1
 grayscale = True
@@ -29,12 +25,10 @@ def timestamped_filename(file_format):
     return str(timestamp())+"."+file_format
 
 def main():
-    trainPath = os.path.join(dataset_folder, train_folder, class_name)
-    testPath = os.path.join(dataset_folder, test_folder, class_name)
+    dataset_path = os.path.join(dataset_folder, class_name)
 
-    # create paths if not exists
-    check_path(trainPath)
-    check_path(testPath)
+    # create path if not exists
+    check_path(dataset_path)
 
     # load face reco haar
     face_cascade = cv2.CascadeClassifier('../haar/haarcascade_frontalface_default.xml')
@@ -73,7 +67,7 @@ def main():
         if capture and timestamp()-last_capture>time_between_capture_ms:
             filename = timestamped_filename(file_format)
             pic = cv2.resize(result, (width, height))
-            cv2.imwrite(os.path.join(trainPath, filename), pic)
+            cv2.imwrite(os.path.join(dataset_path, filename), pic)
             last_capture = timestamp()
 
         # handle keyboard events
@@ -82,13 +76,7 @@ def main():
             break
         elif key == ord('r'):
             capture = not capture
-            if capture:
-                print("start capture")
-                filename = timestamped_filename(file_format)
-                pic = cv2.resize(result, (width, height))
-                cv2.imwrite(os.path.join(testPath, filename), pic)
-            else:
-                print("stop capture")
+            print("start capture" if capture else "stop capture")
 
     # When everything done, release the capture
     cap.release()

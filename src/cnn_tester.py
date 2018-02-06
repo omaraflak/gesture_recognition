@@ -18,7 +18,7 @@ def max_index_of(array):
 
 def main():
     # load neural network
-    model = cnn.read_model('../cache', 'architecture.json', 'weights.h5')
+    model = cnn.read_model('../model')
 
     # load face reco haar
     face_cascade = cv2.CascadeClassifier('../haar/haarcascade_frontalface_default.xml')

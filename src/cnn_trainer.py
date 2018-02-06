@@ -20,8 +20,7 @@ from keras import backend as K
 import tensorflow as tf
 from tensorflow.python.tools import freeze_graph, optimize_for_inference_lib
 
-# number of classes/categories of network output (e.g. car, chicken, human --> 3)
-nb_classes = 5
+from sklearn.model_selection import train_test_split
 
 # how many images to process before applying gradient correction
 batch_sz = 32
@@ -32,15 +31,16 @@ nb_epoch = 30
 # how many images to generate per image in datasets
 nb_gen = 20
 
-# list files and folders in a given directory
-def listdir(path):
-    listing = os.listdir(path)
-    retlist = []
-    for name in listing:
-        if name.startswith('.'):
-            continue
-        retlist.append(name)
-    return retlist
+# create path if not exists
+def create_ifnex(directory):
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+# exit program is path if not exists
+def exit_ifnex(directory):
+    if not os.path.exists(directory):
+        print(directory, 'does not exist')
+        exit()
 
 # loads an opencv image from a filepath
 def get_img(path):
@@ -49,27 +49,6 @@ def get_img(path):
     image = img_to_array(image)
     image = image.reshape(db.width, db.height, db.channel)
     return image
-
-# get output vector for network
-def get_output(i):
-	out = []
-	for j in range(nb_classes):
-		if j==i:
-			out.append(1)
-		else:
-			out.append(0)
-	return out
-
-# shuffle two arrays in the same way
-def shuffle_in_unison(a, b):
-    assert len(a) == len(b)
-    shuffled_a = np.empty(a.shape, dtype=a.dtype)
-    shuffled_b = np.empty(b.shape, dtype=b.dtype)
-    permutation = np.random.permutation(len(a))
-    for old_index, new_index in enumerate(permutation):
-        shuffled_a[new_index] = a[old_index]
-        shuffled_b[new_index] = b[old_index]
-    return shuffled_a, shuffled_b
 
 # use keras to generate more data from existing images
 def generate_data(path):
@@ -82,9 +61,9 @@ def generate_data(path):
         horizontal_flip=True,
         fill_mode='nearest')
 
-	classesFolders = listdir(path)
+	classesFolders = os.listdir(path)
 	for folder in classesFolders:
-		files = listdir(os.path.join(path, folder))
+		files = os.listdir(os.path.join(path, folder))
 		for fl in files:
 			img = get_img(os.path.join(path, folder, fl))
 			img = img.reshape(1, db.width, db.height, db.channel)
@@ -106,36 +85,34 @@ def generate_data(path):
 #       --- chickens/
 #           - chicken1.png
 #           - chicken2.png
-def load_data(path):
-	X_data = []
-	Y_data = []
-	mapping = []
+def load_data(dataset_path):
+	x_data = []
+	y_data = []
+	labels = []
 
-	classesFolders = listdir(path)
-	nb = len(classesFolders)
-
-	if nb!=nb_classes:
-		print('Number of classes doesnt match')
-		exit()
-
-	for i in range(nb_classes):
-		files = listdir(os.path.join(path, classesFolders[i]))
-		mapping.append(classesFolders[i])
+    classes = os.listdir(dataset_path)
+	for i in range(len(classes)):
+		files = os.listdir(os.path.join(dataset_path, classes[i]))
+		labels.append(classes[i])
 		for fl in files:
-			X_data.append(get_img(os.path.join(path, classesFolders[i], fl)))
-			Y_data.append(get_output(i))
+			x_data.append(get_img(os.path.join(dataset_path, classes[i], fl)))
+			y_data.append(i)
 
-	X_data = np.array(X_data, dtype="float") / 255.0
-	Y_data = np.array(Y_data)
+	x_data = np.array(x_data, dtype="float") / 255.0
+	y_data = np.array(y_data)
 
-	X_data, Y_data = shuffle_in_unison(X_data, Y_data)
+    y_data = keras.utils.np_utils.to_categorical(y_data)
+	return x_data, y_data, labels
 
-	return X_data, Y_data, mapping
+# split dataset into training and testing
+def split_dataset(x_data, y_data):
+    x_train, x_test, y_train, y_test = train_test_split(x_data, y_data, test_size=0.1, shuffle=True)
+    return x_train, y_train, x_test, y_test
 
 # build convolutional neural network
-def build_model():
+def build_model(nb_classes):
 	model = Sequential()
-	model.add(Conv2D(filters=64, kernel_size=3, strides=1, padding='same', activation='relu', input_shape=[db.width, db.height, db.channel]))
+	model.add(Conv2D(filters=64, kernel_size=3, strides=1, padding='same', activation='relu', input_shape=[db.height, db.width, db.channel]))
 	model.add(MaxPooling2D(pool_size=2, strides=2, padding='same'))
 	model.add(Conv2D(filters=128, kernel_size=3, strides=1, padding='same', activation='relu'))
 	model.add(MaxPooling2D(pool_size=2, strides=2, padding='same'))
@@ -149,21 +126,21 @@ def build_model():
 	return model
 
 # train model with data
-def train(model, x_train, y_train, x_test, y_test):
+def train(model, x_train, y_train):
     model.compile(loss=keras.losses.categorical_crossentropy, optimizer=keras.optimizers.SGD(lr=0.01), metrics=['accuracy'])
-    model.fit(x_train, y_train, batch_size=batch_sz, epochs=nb_epoch, verbose=1, validation_data=(x_test, y_test))
+    model.fit(x_train, y_train, batch_size=batch_sz, epochs=nb_epoch, verbose=1, validation_split=0.1)
 
 # save network model and network weights into files
-def save_model(model, network_path, network_model, network_weights):
-    if not os.path.isdir(network_path):
-        os.mkdir(network_path)
-    open(os.path.join(network_path, network_model), 'w').write(model.to_json())
-    model.save_weights(os.path.join(network_path, network_weights), overwrite=True)
+def save_model(model, network_path):
+    create_ifnex(network_path)
+    open(os.path.join(network_path, 'architecture.json'), 'w').write(model.to_json())
+    model.save_weights(os.path.join(network_path, 'weights.h5'), overwrite=True)
 
 # load network model and network weights from files
-def read_model(network_path, network_model, network_weights):
-	model = model_from_json(open(os.path.join(network_path, network_model)).read())
-	model.load_weights(os.path.join(network_path, network_weights))
+def read_model(network_path):
+    exit_ifnex(network_path)
+	model = model_from_json(open(os.path.join(network_path, 'architecture.json')).read())
+	model.load_weights(os.path.join(network_path, 'weights.h5'))
 	return model
 
 # export model for mobile devices (tensorflow lite)
@@ -191,21 +168,18 @@ def export_model_for_mobile(dst, model_name, input_node_name, output_node_name):
 
 
 def main():
-    # get training and testing folders from dataset_builder.py
-    trainPath = os.path.join(db.dataset_folder, db.train_folder)
-    testPath = os.path.join(db.dataset_folder, db.test_folder)
-
     # generate data
-    generate_data(trainPath)
+    generate_data(db.dataset_folder)
 
-    # Load data
-    x_train, y_train, mapping = load_data(trainPath)
-    x_test, y_test, mapping2 = load_data(testPath)
+    # Load data, split data
+    x_data, y_data, labels = load_data(db.dataset_folder)
+    x_train, y_train, x_test, y_test = split_dataset(x_data, y_data)
 
     # Create network, train it, save it
-    model = build_model()
-    train(model, x_train, y_train, x_test, y_test)
-    save_model(model, '../cache', 'architecture.json', 'weights.h5')
+    nb_classes = len(os.listdir(db.dataset_folder))
+    model = build_model(nb_classes)
+    train(model, x_train, y_train)
+    save_model(model, '../model')
 
     # Export model for tensorflow lite + write labels
     export_model_for_mobile('../out', 'convnet', "conv2d_1_input", "dense_2/Softmax")
@@ -214,7 +188,7 @@ def main():
         labels.write("%s\n" % item)
 
     # Evaluate model on test data
-    scores = model.evaluate(x_test, y_test, verbose=0)
+    scores = model.evaluate(x_test, y_test)
     print("Accuracy: %.2f%%" % (scores[1]*100))
 
 if __name__ == '__main__':
