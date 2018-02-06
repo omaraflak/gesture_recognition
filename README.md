@@ -83,27 +83,22 @@ Four files are included in this repository :
 
 In **dataset_builder.py** there is a **dataset_folder** variable which is set by default to **gestures**.
 
-This folder will contain **training** data and **testing** data. Moreover, the **train** folder and the **test** folder should include different folders for each class e.g.
+This folder should include a different folder for each class e.g.
 
 ```
 --- dataset/
-    --- train/
-        --- cars/
-            - car1.png
-            - car2.png
-        --- humans/
-            - human1.png
-            - human2.png
-        --- chickens/
-           - chicken1.png
-           - chicken2.png
-    --- test/
-        --- cars/
-        --- humans/
-        --- chickens/
+    --- cars/
+        - car1.png
+        - car2.png
+    --- humans/
+        - human1.png
+        - human2.png
+    --- chickens/
+       - chicken1.png
+       - chicken2.png
 ```
 
-The script was made so that the **train** folder, the **test** folder as well as the **dataset** folder are generated automatically. Simple set the variables according to your needs and run the program :
+Run the program :
 
 ```shell
 python dataset_builder.py
@@ -125,8 +120,8 @@ Then run the program :
 python cnn_trainer.py
 ```
 
-Once the network has trained, it should have generated two folders **cache** and **out**.
-* **cache** contains the whole network (model + weights) saved into files, so you can reload it later without retraining it
+Once the network has trained, it should have generated two folders **model** and **out**.
+* **model** contains the whole network (model + weights) saved into files, so you can reload it later without retraining it.
 * **out** contains several files. Amongst them, a file starting with **tensorflow_lite_** which is the network model for Tensorflow Lite. Tensorflow Lite was developed by Google and allows you to run pretrained tensorflow models on mobile devices (Android and IOS).  
 
 ## Step 3 : Test the network
