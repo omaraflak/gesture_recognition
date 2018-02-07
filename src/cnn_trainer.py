@@ -110,23 +110,24 @@ def split_dataset(x_data, y_data):
 
 # build convolutional neural network
 def build_model(nb_classes):
-	model = Sequential()
-	model.add(Conv2D(filters=64, kernel_size=3, strides=1, padding='same', activation='relu', input_shape=[db.height, db.width, db.channel]))
-	model.add(MaxPooling2D(pool_size=2, strides=2, padding='same'))
-	model.add(Conv2D(filters=128, kernel_size=3, strides=1, padding='same', activation='relu'))
-	model.add(MaxPooling2D(pool_size=2, strides=2, padding='same'))
-	model.add(Conv2D(filters=256, kernel_size=3, strides=1, padding='same', activation='relu'))
-	model.add(MaxPooling2D(pool_size=2, strides=2, padding='same'))
+    model = Sequential()
+    model.add(Conv2D(filters=64, kernel_size=3, strides=1, padding='same', activation='relu', input_shape=[db.height, db.width, db.channel]))
+    model.add(MaxPooling2D(pool_size=2, strides=2, padding='same'))
+    model.add(Conv2D(filters=128, kernel_size=3, strides=1, padding='same', activation='relu'))
+    model.add(MaxPooling2D(pool_size=2, strides=2, padding='same'))
+    model.add(Conv2D(filters=256, kernel_size=3, strides=1, padding='same', activation='relu'))
+    model.add(MaxPooling2D(pool_size=2, strides=2, padding='same'))
 
-	model.add(Flatten())
-	model.add(Dense(1000, activation='relu'))
-	model.add(Dense(nb_classes, activation='softmax'))
+    model.add(Flatten())
+    model.add(Dropout(0.5))
+    model.add(Dense(1000, activation='relu'))
+    model.add(Dense(nb_classes, activation='softmax'))
 
-	return model
+    return model
 
 # train model with data
 def train(model, x_train, y_train):
-    model.compile(loss=keras.losses.categorical_crossentropy, optimizer=keras.optimizers.SGD(lr=0.01), metrics=['accuracy'])
+    model.compile(loss=keras.losses.categorical_crossentropy, optimizer=keras.optimizers.Adadelta(), metrics=['accuracy'])
     model.fit(x_train, y_train, batch_size=batch_sz, epochs=nb_epoch, verbose=1, validation_split=0.1)
 
 # save network model and network weights into files
@@ -168,7 +169,7 @@ def export_model_for_mobile(dst, model_name, input_node_name, output_node_name):
 
 def main():
     # generate data
-    generate_data(db.dataset_folder)
+    # generate_data(db.dataset_folder)
 
     # Load data, split data
     x_data, y_data, labels = load_data(db.dataset_folder)

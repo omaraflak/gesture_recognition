@@ -62,9 +62,11 @@ Once the user's hand extracted from the background, a **gray scaling** is applie
 I used **Keras** which is a high level framework built on top of **Tensorflow** and which allows you to create complex neural networks easily.
 For image recognition problems, **convolutional neural networks** have proven to be very efficient (no implementation of CapsNet for now...). Therefore, the neural network I used for this program has the following architecture :
 
-**Input > Conv > Max Pooling > Conv > Max Pooling > Conv > Max Pooling > Dense > Fully Connected > Output**
+**Input > Conv > MaxPool > Conv > MaxPool > Conv > MaxPool > Dropout > Dense > Output**
 
-Each convolutional layers uses a Rectified Linear Unit (ReLU) activation function. The model itself uses the well known Stochastic Gradient Descent (SGD) algorithm to minimize a Cross-Entropy loss function (which is better suited for classification).
+Each convolutional layers uses a Rectified Linear Unit (ReLU) activation function. The model itself uses the Adadelta (adaptive learning rate) algorithm to minimize a Cross-Entropy loss function (which is better suited for classification). A Dropout is added near the end of the network to help generalize better.
+
+With this architecture we manage to get a 96% accuracy on validation set.
 
 ## Image Augmentation with Keras
 
