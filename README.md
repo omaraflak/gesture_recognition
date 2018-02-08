@@ -176,7 +176,7 @@ python cnn_tester.py
 Some points to emphasize if the model is used on mobile phones :
 
 * The network **cannot** process images of a **different** size that those it was trained on (currently **32x32** pixels but can be easily changed).
-* The image passed to the network should be filtered based on **hsv** skin color and in **gray scale** mode.
+* The image passed to the network should be filtered based on **hsv** skin color, in **gray scale** mode and normalized (divide every value of the matrix by 255).
 * The output of the prediction is a vector of size (1,n) where n is the number of classes the network was trained on. The network will output numbers between 0 and 1 (a number close to 0 means low probability, a number close to 1 means high probability). The mapping between the output vector and the classes is available in the file **out/labels.txt** after the training.
 
 # Pre-trained model

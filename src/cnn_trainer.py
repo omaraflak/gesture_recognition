@@ -26,7 +26,7 @@ from sklearn.model_selection import train_test_split
 batch_sz = 32
 
 # how many times the network should train on the whole dataset
-nb_epoch = 100
+nb_epoch = 200
 
 # how many images to generate per image in datasets
 nb_gen = 20
@@ -131,7 +131,7 @@ def build_model(nb_classes):
 
 # train model with data
 def train(model, x_train, y_train):
-    model.compile(loss=keras.losses.categorical_crossentropy, optimizer=keras.optimizers.Adam(), metrics=['accuracy'])
+    model.compile(loss=keras.losses.categorical_crossentropy, optimizer=keras.optimizers.Adadelta(), metrics=['accuracy'])
     history = model.fit(x_train, y_train, batch_size=batch_sz, epochs=nb_epoch, verbose=1, validation_split=0.3)
     return history
 
@@ -192,7 +192,7 @@ def plot_history(history):
 
 def main():
     # generate data
-    # generate_data(db.dataset_folder)
+    generate_data(db.dataset_folder)
 
     # Load data, split data
     x_data, y_data, labels = load_data(db.dataset_folder)
@@ -205,8 +205,6 @@ def main():
     model.summary()
     save_model(model, '../model')
 
-    plot_history(history)
-
     # Export model for tensorflow lite + write labels
     export_model_for_mobile('../out', 'convnet', "conv2d_1_input", "dense_2/Softmax")
     fl = open('../out/labels.txt', 'w')
@@ -216,6 +214,9 @@ def main():
     # Evaluate model on test data
     scores = model.evaluate(x_test, y_test)
     print("Accuracy: %.2f%%" % (scores[1]*100))
+
+    # display graphs
+    plot_history(history)
 
 if __name__ == '__main__':
     main()
