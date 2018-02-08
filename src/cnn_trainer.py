@@ -1,8 +1,8 @@
-import os
-import os.path as path
+import matplotlib.pyplot as plt
 import numpy as np
 import json
 import cv2
+import os
 
 import dataset_builder as db
 
@@ -13,6 +13,7 @@ from keras.models import Sequential
 from keras.models import model_from_json
 from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
+from keras.callbacks import ReduceLROnPlateau
 from keras.utils import np_utils
 from keras import backend as K
 
@@ -25,7 +26,7 @@ from sklearn.model_selection import train_test_split
 batch_sz = 32
 
 # how many times the network should train on the whole dataset
-nb_epoch = 30
+nb_epoch = 100
 
 # how many images to generate per image in datasets
 nb_gen = 20
@@ -113,22 +114,26 @@ def build_model(nb_classes):
     model = Sequential()
     model.add(Conv2D(filters=64, kernel_size=3, strides=1, padding='same', activation='relu', input_shape=[db.height, db.width, db.channel]))
     model.add(MaxPooling2D(pool_size=2, strides=2, padding='same'))
+    model.add(Dropout(0.5))
     model.add(Conv2D(filters=128, kernel_size=3, strides=1, padding='same', activation='relu'))
     model.add(MaxPooling2D(pool_size=2, strides=2, padding='same'))
+    model.add(Dropout(0.5))
     model.add(Conv2D(filters=256, kernel_size=3, strides=1, padding='same', activation='relu'))
     model.add(MaxPooling2D(pool_size=2, strides=2, padding='same'))
+    model.add(Dropout(0.5))
 
     model.add(Flatten())
+    model.add(Dense(256, activation='relu'))
     model.add(Dropout(0.5))
-    model.add(Dense(1000, activation='relu'))
     model.add(Dense(nb_classes, activation='softmax'))
 
     return model
 
 # train model with data
 def train(model, x_train, y_train):
-    model.compile(loss=keras.losses.categorical_crossentropy, optimizer=keras.optimizers.Adadelta(), metrics=['accuracy'])
-    model.fit(x_train, y_train, batch_size=batch_sz, epochs=nb_epoch, verbose=1, validation_split=0.1)
+    model.compile(loss=keras.losses.categorical_crossentropy, optimizer=keras.optimizers.Adam(), metrics=['accuracy'])
+    history = model.fit(x_train, y_train, batch_size=batch_sz, epochs=nb_epoch, verbose=1, validation_split=0.3)
+    return history
 
 # save network model and network weights into files
 def save_model(model, network_path):
@@ -166,6 +171,24 @@ def export_model_for_mobile(dst, model_name, input_node_name, output_node_name):
     with tf.gfile.FastGFile(dst + '/tensorflow_lite_' + model_name + '.pb', "wb") as f:
         f.write(output_graph_def.SerializeToString())
 
+def plot_history(history):
+    #  Accuracy
+    plt.plot(history.history['acc'])
+    plt.plot(history.history['val_acc'])
+    plt.title('model accuracy')
+    plt.ylabel('accuracy')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'validation'], loc='upper left')
+    plt.show()
+
+    # Loss
+    plt.plot(history.history['loss'])
+    plt.plot(history.history['val_loss'])
+    plt.title('model loss')
+    plt.ylabel('loss')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'validation'], loc='upper left')
+    plt.show()
 
 def main():
     # generate data
@@ -178,8 +201,11 @@ def main():
     # Create network, train it, save it
     nb_classes = len(os.listdir(db.dataset_folder))
     model = build_model(nb_classes)
-    train(model, x_train, y_train)
+    history = train(model, x_train, y_train)
+    model.summary()
     save_model(model, '../model')
+
+    plot_history(history)
 
     # Export model for tensorflow lite + write labels
     export_model_for_mobile('../out', 'convnet', "conv2d_1_input", "dense_2/Softmax")

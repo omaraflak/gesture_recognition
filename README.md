@@ -62,11 +62,46 @@ Once the user's hand extracted from the background, a **gray scaling** is applie
 I used **Keras** which is a high level framework built on top of **Tensorflow** and which allows you to create complex neural networks easily.
 For image recognition problems, **convolutional neural networks** have proven to be very efficient (no implementation of CapsNet for now...). Therefore, the neural network I used for this program has the following architecture :
 
-**Input > Conv > MaxPool > Conv > MaxPool > Conv > MaxPool > Dropout > Dense > Output**
+```
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_1 (Conv2D)            (None, 32, 32, 64)        640       
+_________________________________________________________________
+max_pooling2d_1 (MaxPooling2 (None, 16, 16, 64)        0         
+_________________________________________________________________
+dropout_1 (Dropout)          (None, 16, 16, 64)        0         
+_________________________________________________________________
+conv2d_2 (Conv2D)            (None, 16, 16, 128)       73856     
+_________________________________________________________________
+max_pooling2d_2 (MaxPooling2 (None, 8, 8, 128)         0         
+_________________________________________________________________
+dropout_2 (Dropout)          (None, 8, 8, 128)         0         
+_________________________________________________________________
+conv2d_3 (Conv2D)            (None, 8, 8, 256)         295168    
+_________________________________________________________________
+max_pooling2d_3 (MaxPooling2 (None, 4, 4, 256)         0         
+_________________________________________________________________
+dropout_3 (Dropout)          (None, 4, 4, 256)         0         
+_________________________________________________________________
+flatten_1 (Flatten)          (None, 4096)              0         
+_________________________________________________________________
+dense_1 (Dense)              (None, 256)               1048832   
+_________________________________________________________________
+dropout_4 (Dropout)          (None, 256)               0         
+_________________________________________________________________
+dense_2 (Dense)              (None, 5)                 1285      
+=================================================================
+Total params: 1,419,781
+Trainable params: 1,419,781
+Non-trainable params: 0
+_________________________________________________________________
+```
 
-Each convolutional layers uses a Rectified Linear Unit (ReLU) activation function. The model itself uses the Adadelta (adaptive learning rate) algorithm to minimize a Cross-Entropy loss function (which is better suited for classification). A Dropout is added near the end of the network to help generalize better.
+<img src="https://github.com/OmarAflak/gesture_recognition/blob/master/res/accuracy.png?raw=true" />
 
-With this architecture we manage to get a 96% accuracy on validation set.
+<img src="https://github.com/OmarAflak/gesture_recognition/blob/master/res/loss.png?raw=true" />
+
+With this architecture we manage to get a 96.03% accuracy on validation set.
 
 ## Image Augmentation with Keras
 
